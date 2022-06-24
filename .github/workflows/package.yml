@@ -13,6 +13,16 @@ jobs:
         with:
           java-version: '11'
           distribution: 'zulu'
+      - name: Install upstream dependencies (kafka)
+        run: git clone https://github.com/confluentinc/kafka.git && git checkout tags/v7.3.0-22-ccs -b v7.3.0-22-ccs && ./gradlew srcJar && ./gradlew jar && ./gradlewAll publishToMavenLocal
+      - name: Install upstream dependencies (rest-utils)
+        run: git clone git@github.com:confluentinc/rest-utils.git && git checkout 49f3b66f67f58b4e1c0ddd0a0d642baccec8a122 && mvn clean install -DskipTests
+      - name: Install upstream dependencies (schema-registry)
+        run: git clone https://github.com/confluentinc/schema-registry.git && git checkout 49f3b66f67f58b4e1c0ddd0a0d642baccec8a122 && mvn clean install -DskipTests
+      - name: Install upstream dependencies (common)
+        run: git clone git@github.com:confluentinc/common.git && git checkout tags/v7.3.0-469 -b 7.3.0-469 && mvn clean install -DskipTests
+      - name: Install upstream dependencies (kafka-connect-storage-common)
+        run: git clone git@github.com:confluentinc/kafka-connect-storage-common.git && git checkout tags/v11.0.4 -b 11.0.4 && mvn -U clean install -DskipTests -pl \!:kafka-connect-storage-hive
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots package
       - name: Run UdxStreamPartitioner unit tests with Maven

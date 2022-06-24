@@ -17,6 +17,8 @@ import static org.hamcrest.CoreMatchers.is;
 
 // Note, "org.junit.jupiter.api.Test" and not "org.junit.Test;" here
 // Maven does not run the unit test
+// See:
+// https://stackoverflow.com/a/57913738
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
