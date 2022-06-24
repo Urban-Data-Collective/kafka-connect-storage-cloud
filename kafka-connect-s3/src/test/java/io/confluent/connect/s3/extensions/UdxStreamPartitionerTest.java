@@ -247,8 +247,6 @@ public class UdxStreamPartitionerTest extends StorageSinkTestBase {
         assertThat(encodedPartition, is(String.format("invalidIdOrTimestamp/streamUuid=%s", streamUuidNotAUuid)));
     }
 
-    // TODO: test noValidUUid in headers
-    // maybe just print a warning here and add it to another partition, /*/invalidStreamUUid/id/YYYY...
     @Test
     public void testNoUuidInHeadersCorruptedPayload() {
         // Top level config

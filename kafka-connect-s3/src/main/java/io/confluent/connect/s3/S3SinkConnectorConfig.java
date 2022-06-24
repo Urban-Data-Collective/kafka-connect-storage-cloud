@@ -215,8 +215,6 @@ public class S3SinkConnectorConfig extends StorageSinkConnectorConfig {
 
     FORMAT_CLASS_RECOMMENDER.addValidValues(FORMAT_CLASS_VALID_VALUES);
 
-    // TODO: check that adding the EVAnalyticsOcpiPartitioner here _actually works_
-    // Update: it seems to work just fine, it might not even be required
     PARTITIONER_CLASS_RECOMMENDER.addValidValues(
         Arrays.asList(
                 UdxStreamPartitioner.class,

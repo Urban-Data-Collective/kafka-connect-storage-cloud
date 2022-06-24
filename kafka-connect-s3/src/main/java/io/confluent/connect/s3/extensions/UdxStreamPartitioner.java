@@ -51,7 +51,6 @@ public class UdxStreamPartitioner<T> extends DefaultPartitioner<T> {
   private String getStreamUuidFromHeaders(SinkRecord sinkRecord) {
     log.info("Getting offering_uuid value from headers...");
     String streamUuid = null;
-    // This is a job for a filtering lambda
     for (Header header : sinkRecord.headers()) {
       System.out.println("header key => "
               + header.key()
@@ -113,44 +112,7 @@ public class UdxStreamPartitioner<T> extends DefaultPartitioner<T> {
     return String.format(INVALID_TIMESTAMP_PARTITION_FORMAT, streamUuid, entityUuid, timestamp);
   }
 
-  @Override
-  public String encodePartition(SinkRecord sinkRecord) {
-    // Gets streamUuid from the key (or, indeed, the header) of the message
-    // Decode value of sinkRecord as JSON using jackson
-    // If it's not JSON, throw an exception?
-    //    somehow exit gracefully
-    // get entityId from the Json.value of 'id'
-    // from the 'timestamp' Json.value, of form '2021-08-31T17:24:13Z' (zulu time)
-    //    get YYYY-MM, create partition
-    //      get DD, create partition
-    //        get HH, create partition
-
-    // NOTE that any Exceptions thrown from this class
-    // will helpfully crash the entire connector. This means it will not
-    // start up correctly. This means there is no data lake
-
-    // for inspiration, see:
-    // https://stackoverflow.com/questions/57499274/implementing-a-kafka-connect-custom-partitioner
-    // for jackson, see:
-    // https://www.tutorialspoint.com/jackson/jackson_quick_guide.htm
-    log.info("encoding partition with UdxStreamPartitioner...");
-    log.info("Parsing value...");
-
-    String value = sinkRecord.value().toString();
-    log.info("Value: " + value);
-    String streamUuid = null;
-
-    try {
-      log.info("Assuming streamUuid is in the headers...");
-      streamUuid = getStreamUuidFromHeaders(sinkRecord);
-      UUID.fromString(streamUuid);
-    } catch (IllegalArgumentException exception) {
-      String msg =
-              "stream uuid in header is not a valid uuid "
-              + "it therefore probably not a valid stream id";
-      log.warn(msg);
-    }
-
+  private UdxPayload parseJsonStringToKnownClass(String jsonStringValue) {
     ObjectMapper mapper = new ObjectMapper();
 
     // We don't want to have to extend our POJO with every single
@@ -171,20 +133,66 @@ public class UdxStreamPartitioner<T> extends DefaultPartitioner<T> {
     // https://www.baeldung.com/jackson-nested-values#mapping-with-custom-jsondeserializer
     // The use of concrete *Payload classes does make things very explicit, though
     try {
-      // try to parse into sessions
-      udxPayload = mapper.readValue(value, FlatTimestampPayload.class);
+      // try to parse from { timestamp: string }
+      udxPayload = mapper.readValue(jsonStringValue, FlatTimestampPayload.class);
     } catch (JacksonException e) {
-      log.warn("Could not parse payload into sessions POJO");
+      log.warn("Could not parse payload into FlatTimestampPayload POJO");
     }
 
     try {
-      // try to parse into location
-      udxPayload = mapper.readValue(value, NestedTimestampPayload.class);
+      // try to parse from { timestamp: { type: 'Property', value: string } }
+      udxPayload = mapper.readValue(jsonStringValue, NestedTimestampPayload.class);
     } catch (JacksonException e) {
-      log.warn("Could not parse payload into location POJO");
+      log.warn("Could not parse payload into NestedTimestampPayload POJO");
     }
 
-    log.info("Mapped to: " + udxPayload.getClass().toString());
+    try {
+      log.info("Mapped to: " + udxPayload.getClass().toString());
+    } catch (Exception e) {
+      log.warn("Could not map udxPayload to a known class");
+    }
+
+    return udxPayload;
+  }
+
+  @Override
+  public String encodePartition(SinkRecord sinkRecord) {
+    // Gets streamUuid from the key (or, indeed, the header) of the message
+    // Decode value of sinkRecord as JSON using jackson
+    // If it's not JSON, we do not throw an exception
+    //    we exit gracefully and send the payload into another partition
+    // get entityId from the Json.value of 'id'
+    // from the 'timestamp' Json.value, of form '2021-08-31T17:24:13Z' (zulu time)
+    // timestamp can also be in unix timestamp format (hopefully always in ms form)
+    //    get YYYY-MM, create partition
+    //      get DD, create partition
+    //        get HH, create partition
+
+    // NOTE that any Exceptions thrown from this class
+    // will helpfully crash the entire connector. This means it will not
+    // start up correctly. This means there is no data lake
+
+    // for original inspiration, see:
+    // https://stackoverflow.com/questions/57499274/implementing-a-kafka-connect-custom-partitioner
+    log.info("encoding partition with UdxStreamPartitioner...");
+    log.info("Parsing value...");
+
+    String jsonStringValue = sinkRecord.value().toString();
+    log.info("Value: " + jsonStringValue);
+    String streamUuid = null;
+
+    try {
+      log.info("Assuming streamUuid is in the headers...");
+      streamUuid = getStreamUuidFromHeaders(sinkRecord);
+      UUID.fromString(streamUuid);
+    } catch (IllegalArgumentException exception) {
+      String msg =
+              "stream uuid in header is not a valid uuid "
+              + "it therefore probably not a valid stream id";
+      log.warn(msg);
+    }
+
+    UdxPayload udxPayload = parseJsonStringToKnownClass(jsonStringValue);
 
     // Note that relying on id and timestamp will not be enough to guarantee the
     // payload is an OCPI format if other payloads come in that are NOT OCPI on the same
@@ -206,8 +214,7 @@ public class UdxStreamPartitioner<T> extends DefaultPartitioner<T> {
       DateTime parsedTimestamp = parseTimestampFromPayload(timestamp);
       return generateCompletePartition(streamUuid, entityId, parsedTimestamp);
     } catch (Exception e) {
-      // If we can't parse the timestamp, should we
-      log.error(e.getMessage());
+      log.warn(e.getMessage());
       String msg = "Could not parse YYYY-MM/DD/HH values from timestamp: "
               + timestamp
               + " => Cannot build partition";
