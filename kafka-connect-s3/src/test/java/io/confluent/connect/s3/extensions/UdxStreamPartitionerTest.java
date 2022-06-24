@@ -2,7 +2,6 @@ package io.confluent.connect.s3.extensions;
 
 import io.confluent.connect.storage.StorageSinkTestBase;
 import io.confluent.connect.storage.common.StorageCommonConfig;
-import io.confluent.connect.storage.errors.PartitionException;
 import io.confluent.connect.storage.partitioner.PartitionerConfig;
 import org.apache.kafka.common.record.TimestampType;
 import org.apache.kafka.connect.data.Schema;
@@ -15,9 +14,10 @@ import org.joda.time.DateTimeZone;
 import static org.apache.kafka.connect.data.Schema.STRING_SCHEMA;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
 
-import org.junit.Test;
+// Note, "org.junit.jupiter.api.Test" and not "org.junit.Test;" here
+// Maven does not run the unit test
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;

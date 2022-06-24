@@ -17,6 +17,7 @@ package io.confluent.connect.s3;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentialsProvider;
+import io.confluent.connect.s3.extensions.UdxStreamPartitioner;
 import io.confluent.connect.s3.format.bytearray.ByteArrayFormat;
 import io.confluent.connect.s3.format.parquet.ParquetFormat;
 import org.apache.kafka.common.config.ConfigException;
@@ -106,6 +107,7 @@ public class S3SinkConnectorConfigTest extends S3SinkConnectorTestBase {
         ParquetFormat.class
     );
     List<Object> expectedPartitionerClasses = Arrays.<Object>asList(
+            UdxStreamPartitioner.class,
         DefaultPartitioner.class,
         HourlyPartitioner.class,
         DailyPartitioner.class,
