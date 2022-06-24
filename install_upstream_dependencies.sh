@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-rm -rf rest-utils || true && \
-rm -rf schema-registry || true && \
-rm -rf kafka-connect-storage-common || true
-
 echo "------ INSTALLING UPSTREAM DEPENDENCIES FOR kafka-connect-storage-cloud ------"
 
 # [confluentinc/kafka](https://github.com/confluentinc/kafka)
@@ -18,7 +14,7 @@ git clone https://github.com/confluentinc/rest-utils.git && cd rest-utils && git
 cd -
 
 # [confluentinc/schema-registry](https://github.com/confluentinc/schema-registry)
-git clone https://github.com/confluentinc/schema-registry.git && cd schema-registry && git git checkout tags/v7.2.0-1021 -b v7.2.0-1021 && mvn clean install -DskipTests
+git clone https://github.com/confluentinc/schema-registry.git && cd schema-registry && git checkout tags/v7.2.0-1021 -b v7.2.0-1021 && mvn clean install -DskipTests
 cd -
 
 # [confluentinc/kafka-connect-storage-common](https://github.com/confluentinc/kafka-connect-storage-common)
