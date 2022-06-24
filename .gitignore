@@ -16,3 +16,11 @@ build/
 /docs/_build
 
 .DS_Store
+
+# Upstream dependencies that need to be built from source
+kafka/
+rest-utils/
+schema-registry/
+common/
+kafka-connect-storage-common/
+

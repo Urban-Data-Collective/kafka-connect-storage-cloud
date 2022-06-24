@@ -39,12 +39,10 @@ $ sdk install maven
 ## Building a .zip snapshot of this forked connector
 
 1. Build snapshots of the upstream Confluent projects below. This will only work for v10.0.8 of kafka-connect-storage-cloud 
-   1. [confluentinc/kafka](https://github.com/confluentinc/kafka) (NOT Apache Kafka!) - `git checkout tags/v7.3.0-22-ccs -b v7.3.0-22-ccs && ./gradlew srcJar && ./gradlew jar` (maybe)
-      1. Then, to add it to the local maven registry:
-      2. `./gradlewAll publishToMavenLocal`
+   1. [confluentinc/kafka](https://github.com/confluentinc/kafka) (NOT Apache Kafka!) - `git checkout tags/v7.2.0-108-ccs -b v7.2.0-108-ccs && ./gradlewAll publishToMavenLocal`
    2. [confluentinc/rest-utils](https://github.com/confluentinc/rest-utils) - exact commit = 49f3b66f67f58b4e1c0ddd0a0d642baccec8a122 - `mvn install`
    3. [confluentinc/schema-registry](https://github.com/confluentinc/schema-registry) - exact commit = 49f3b66f67f58b4e1c0ddd0a0d642baccec8a122 - `mvn install`
-   4. [confluentinc/common](https://github.com/confluentinc/common) - `git checkout tags/v7.3.0-469 -b 7.3.0-469 && mvn install`
+   4. [confluentinc/common](https://github.com/confluentinc/common) - `git checkout tags/v7.2.0-949 -b v7.2.0-949 && mvn install -DskipTests`
    5. [confluentinc/kafka-connect-storage-common](https://github.com/confluentinc/kafka-connect-storage-common) - `git checkout tags/v11.0.4 -b 11.0.4 && mvn -U clean install -pl \!:kafka-connect-storage-hive`
       1. the `-pl \!:kafka-connect-storage-hive` instructs maven NOT to build that module - the install currently fails because a dependency mirror is not available. A build of kafka-connect-s3 does not seem to depend on it...
       2. **NOTE**, in the top level pom.xml, change the version of io.confluent.common to '7.3.0-469' to match the version in step 4. i.e.
