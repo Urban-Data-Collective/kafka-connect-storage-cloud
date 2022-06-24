@@ -1,9 +1,9 @@
-name: Java CI
+name: (Maven) package and test custom Kafka Connect Connector
 
 on: [pull_request]
 
 jobs:
-  build:
+  package-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,7 +15,7 @@ jobs:
           distribution: 'zulu'
       - name: Install upstream dependencies
         run: ./install_upstream_dependencies.sh
-      - name: Build with Maven
-        run: mvn --batch-mode --update-snapshots package
-      - name: Run UdxStreamPartitioner unit tests with Maven
+      - name: Package up ZIP
+        run: mvn --batch-mode package -DskipTests
+      - name: Run UdxStreamPartitioner unit tests
         run: mvn --batch-mode -Dtest=UdxStreamPartitionerTest -Dsurefire.failIfNoSpecifiedTests=false clean test

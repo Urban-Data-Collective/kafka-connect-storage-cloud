@@ -13,18 +13,25 @@ Blogpost for this connector can be found [here](https://www.confluent.io/blog/ap
 
 # Development
 
-NOTE: this is an exact fork of v10.0.8:
+NOTE: this is an exact fork of Kafka Connect Connector for S3 v10.0.8:
 
 ```shell
- git checkout tags/v10.0.8 -b v10.0.8
+ git checkout tags/v10.0.8 -b v10.0.8 # a branch was made from this exact commit
 ```
 
-TODO: env: IntelliJ Community edition (I'm sure VSCode would work fine too, but I couldn't bear dealing with random Java extensions)
+## IDE setup
 
-NBNBNB: if using IntelliJ in combination with sdkman, remember to set the IntelliJ Maven path to the sdkman maven path!
-  Otherwise the various `mvn installs`s on the dependent packages won't be linked properly and there will be PAIN
+I've only tried using IntelliJ Community edition for development so far. I'm sure VSCode would work fine too, but I couldn't bear dealing with random Java extensions.
 
-Other bits: **Make sure the indent level in IntelliJ is set to 2 spaces. Checkstyle (which seems to be a linter) will
+If using IntelliJ in combination with sdkman, remember to set the IntelliJ Maven path to the sdkman maven path!
+Otherwise, the various `mvn installs`s on the dependent packages won't be linked properly and there will be PAIN.
+
+Find this setting in IntelliJ 2022.1.2 Community edition in the preferences:
+
+- Preferences > Build, Execution, Deployment > Build Tools > Maven
+    - option: "Maven home path"
+
+Finally, **make sure the indent level in IntelliJ is set to 2 spaces. Checkstyle (which seems to be a linter) will
 complain otherwise**
 
 ## Installing Java 11 and maven with sdkman
@@ -40,9 +47,9 @@ $ sdk install maven
 
 ## Installing upstream dependencies
 
-For various reasons that are
-particular to Confluent Incs OSS workflow, a few of the dependencies of the kafka-connect-storage-cloud module
-must be downloaded, built from source and then added to the local Maven repository. These depedencies are:
+For various reasons that are particular to Confluent Inc's FOSS workflow, 
+a few of the dependencies of the kafka-connect-storage-cloud module
+must be downloaded, built from source and then added to the local Maven repository. These dependencies are:
 
 - [confluentinc/kafka](https://github.com/confluentinc/kafka)
 - [confluentinc/common](https://github.com/confluentinc/common)
@@ -57,6 +64,12 @@ Run this script to install the dependencies (it will take a while...)
 
 The dependencies in this script are exact. They were derived from the various pom.xml files that are included in each project.
 The script should continue to work as long as the various tags for the various repos still exist on GitHub.
+
+Then link all of these dependencies to the kafka-connect-s3 module with:
+
+```
+mvn clean install -DskipTests
+```
 
 ## Running tests
 
