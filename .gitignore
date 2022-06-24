@@ -18,6 +18,7 @@ build/
 .DS_Store
 
 # Upstream dependencies that need to be built from source
+# These are needed for local dev and running checks on CI
 kafka/
 rest-utils/
 schema-registry/

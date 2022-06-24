@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-rm -rf common || true && \
 rm -rf rest-utils || true && \
 rm -rf schema-registry || true && \
 rm -rf kafka-connect-storage-common || true
@@ -15,11 +14,11 @@ git clone https://github.com/confluentinc/common.git && cd common && git checkou
 cd -
 
 # [confluentinc/rest-utils](https://github.com/confluentinc/rest-utils)
-git clone https://github.com/confluentinc/rest-utils.git && cd rest-utils && git checkout 49f3b66f67f58b4e1c0ddd0a0d642baccec8a122 && mvn clean install -DskipTests
+git clone https://github.com/confluentinc/rest-utils.git && cd rest-utils && git checkout tags/v7.2.0-987 -b v7.2.0-987 && mvn clean install -DskipTests
 cd -
 
 # [confluentinc/schema-registry](https://github.com/confluentinc/schema-registry)
-git clone https://github.com/confluentinc/schema-registry.git && cd schema-registry && git checkout 49f3b66f67f58b4e1c0ddd0a0d642baccec8a122 && mvn clean install -DskipTests
+git clone https://github.com/confluentinc/schema-registry.git && cd schema-registry && git git checkout tags/v7.2.0-1021 -b v7.2.0-1021 && mvn clean install -DskipTests
 cd -
 
 # [confluentinc/kafka-connect-storage-common](https://github.com/confluentinc/kafka-connect-storage-common)
