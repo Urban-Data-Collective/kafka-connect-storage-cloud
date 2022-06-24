@@ -157,19 +157,8 @@ public class UdxStreamPartitioner<T> extends DefaultPartitioner<T> {
 
   @Override
   public String encodePartition(SinkRecord sinkRecord) {
-    // Gets streamUuid from the key (or, indeed, the header) of the message
-    // Decode value of sinkRecord as JSON using jackson
-    // If it's not JSON, we do not throw an exception
-    //    we exit gracefully and send the payload into another partition
-    // get entityId from the Json.value of 'id'
-    // from the 'timestamp' Json.value, of form '2021-08-31T17:24:13Z' (zulu time)
-    // timestamp can also be in unix timestamp format (hopefully always in ms form)
-    //    get YYYY-MM, create partition
-    //      get DD, create partition
-    //        get HH, create partition
-
     // NOTE that any Exceptions thrown from this class
-    // will helpfully crash the entire connector. This means it will not
+    // will (most helpfully) crash the entire connector. This means it will not
     // start up correctly. This means there is no data lake
 
     // for original inspiration, see:
@@ -194,13 +183,10 @@ public class UdxStreamPartitioner<T> extends DefaultPartitioner<T> {
 
     UdxPayload udxPayload = parseJsonStringToKnownClass(jsonStringValue);
 
-    // Note that relying on id and timestamp will not be enough to guarantee the
-    // payload is an OCPI format if other payloads come in that are NOT OCPI on the same
-    // topic. This is a naive approach!
     if (udxPayload.getId() == null || udxPayload.getTimestamp() == null) {
       log.warn("No UdxPayload mapping found, sending payload to non stream uuid partition...");
       String msg = "Could not map this payload to a defined UdxPayload class";
-      // It's probably a good idea to see if we can still parse the timestamp, though
+      // At this point, it might be a good idea to see if we can still parse the timestamp.
       // If not that, just use the timestamp of the message supplied by kakfa?
       return generateInvalidPayloadPartition(streamUuid);
     }
