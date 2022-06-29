@@ -1,6 +1,11 @@
 name: (Maven) package and test custom Kafka Connect Connector
 
 # For ssh debug
+#  - name: Setup upterm session
+#      uses: lhotari/action-upterm@v1
+#      with:
+#        ## limits ssh access and adds the ssh public keys of the listed GitHub users
+#        limit-access-to-users: inbrewj-udc
 
 on: [pull_request]
 
@@ -18,14 +23,9 @@ jobs:
       - name: Install upstream dependencies
         run: ./install_upstream_dependencies.sh
       - name: Package up ZIP
-        run: mvn --batch-mode clean install -DskipTests
+        run: mvn --batch-mode install -DskipTests
       - name: Run UdxStreamPartitioner unit tests
-        run: mvn --batch-mode -Dtest=UdxStreamPartitionerTest -Dsurefire.failIfNoSpecifiedTests=false clean test
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
-        with:
-          ## limits ssh access and adds the ssh public keys of the listed GitHub users
-          limit-access-to-users: inbrewj-udc
+        run: mvn --batch-mode -Dtest=UdxStreamPartitionerTest -Dsurefire.failIfNoSpecifiedTests=false test
       - uses: jakejarvis/s3-sync-action@master
         env:
           AWS_S3_BUCKET: ${{ secrets.DEV_AWS_S3_BUCKET }}
