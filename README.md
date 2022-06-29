@@ -87,16 +87,32 @@ The 'deployable artifact' of this connector is a `.zip` archive built by Maven.
 
 1. `mvn clean install -DskipTests` (skips the integration tests, since these take a while)
 2. The `.zip` bundle will appear in `kafka-connect-s3/target/components/packages/confluentinc-kafka-connect-s3-10.0.8.zip`
-3. `ls -l kafka-connect-s3/target/components/packages/confluentinc-kafka-connect-s3-10.0.8.zip`, make sure the last updated time makes sense
+3. As a sanity check, it's worth running `ls -l kafka-connect-s3/target/components/packages/confluentinc-kafka-connect-s3-10.0.8.zip`, to make sure the last updated time makes sense
 
 ## Updating the connector ZIP in S3
 
-1. copy that zip file to the udx-infra repo: `./build_zip_and_copy_to_infra.sh /your/path/to/udx-infra/terraform/modules/data-lake`
-2. Then nagivate to `~/workshop/udx-infra/terraform/modules/data-lake/`
-3. (maybe) delete the file in s3
-4. (maybe) delete the existing connector - the connector might cache the zip once created forever...
-   1. Or, just `terragrunt destroy` before an `apply` that requires a connector code update
-5. Then run `terragrunt apply`. This will delete the old connector and create a new one with the updates from this repo
+### Via CI
+
+There are workflows described in `.github/workflows/deploy-{ENV}.yml` that automatically push an artifact to the correct S3 bucket on merging to the `develop`, `stage` and `prod` branches.
+
+Once the ZIP has been uploaded to the S3 bucket, you'll need to reapply some terraform config. See the readme here for more details:  
+    - TODO: add path to README in udx-infra repo once https://github.com/Urban-Data-Collective/udx-infra/pull/155 is merged 
+
+### Via shell script
+
+If for any reason the GitHub actions workflow is broken, or it's not desirable to use it, you can build the artifact with the script in the root of this repo:
+
+```shell
+# for dev
+$ ./build_zip_and_copy_to_s3.sh dev 
+# for stage
+$ ./build_zip_and_copy_to_s3.sh stage
+# for prod
+$ ./build_zip_and_copy_to_s3.sh prod
+```
+
+Once the ZIP has been uploaded to the S3 bucket, you'll need to reapply some terraform config. See the readme here for more details:  
+    - TODO: add path to README in udx-infra repo once https://github.com/Urban-Data-Collective/udx-infra/pull/155 is merged
 
 ## Original docs
 
