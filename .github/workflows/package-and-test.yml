@@ -18,7 +18,7 @@ jobs:
       - name: Install upstream dependencies
         run: ./install_upstream_dependencies.sh
       - name: Package up ZIP
-        run: mvn --batch-mode package -DskipTests
+        run: mvn --batch-mode clean install -DskipTests
       - name: Run UdxStreamPartitioner unit tests
         run: mvn --batch-mode -Dtest=UdxStreamPartitionerTest -Dsurefire.failIfNoSpecifiedTests=false clean test
       - name: Setup upterm session

@@ -95,9 +95,6 @@ The 'deployable artifact' of this connector is a `.zip` archive built by Maven.
 
 There are workflows described in `.github/workflows/deploy-{ENV}.yml` that automatically push an artifact to the correct S3 bucket on merging to the `develop`, `stage` and `prod` branches.
 
-Once the ZIP has been uploaded to the S3 bucket, you'll need to reapply some terraform config. See the readme here for more details:  
-    - TODO: add path to README in udx-infra repo once https://github.com/Urban-Data-Collective/udx-infra/pull/155 is merged 
-
 ### Via shell script
 
 If for any reason the GitHub actions workflow is broken, or it's not desirable to use it, you can build the artifact with the script in the root of this repo:
@@ -111,8 +108,10 @@ $ ./build_zip_and_copy_to_s3.sh stage
 $ ./build_zip_and_copy_to_s3.sh prod
 ```
 
-Once the ZIP has been uploaded to the S3 bucket, you'll need to reapply some terraform config. See the readme here for more details:  
-    - TODO: add path to README in udx-infra repo once https://github.com/Urban-Data-Collective/udx-infra/pull/155 is merged
+### Once the updates have been pushed to S3
+
+Once the ZIP has been uploaded to the S3 bucket, you'll need to reapply some terraform config.
+See the readme [here](https://github.com/Urban-Data-Collective/udx-infra/tree/main/terraform/modules/data-lake/README.md) for what needs to be done.
 
 ## Original docs
 
