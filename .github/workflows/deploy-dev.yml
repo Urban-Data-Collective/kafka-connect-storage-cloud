@@ -1,6 +1,9 @@
-name: (Maven) package and test custom Kafka Connect Connector
+name: Package and deploy zip of connector to DEV
 
-on: [pull_request]
+on:
+  push:
+    branches:
+      - develop
 
 jobs:
   package-and-test:
@@ -17,8 +20,6 @@ jobs:
         run: ./install_upstream_dependencies.sh
       - name: Package up ZIP
         run: mvn --batch-mode package -DskipTests
-      - name: Run UdxStreamPartitioner unit tests
-        run: mvn --batch-mode -Dtest=UdxStreamPartitionerTest -Dsurefire.failIfNoSpecifiedTests=false clean test
       - uses: jakejarvis/s3-sync-action@master
         env:
           AWS_S3_BUCKET: ${{ secrets.DEV_AWS_S3_BUCKET }}
