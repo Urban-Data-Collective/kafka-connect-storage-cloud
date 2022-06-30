@@ -26,10 +26,12 @@ jobs:
         run: mvn --batch-mode install -DskipTests
       - name: Run UdxStreamPartitioner unit tests
         run: mvn --batch-mode -Dtest=UdxStreamPartitionerTest -Dsurefire.failIfNoSpecifiedTests=false test
+      - name: Rename and move packaged ZIP
+        run: mkdir zips && cp kafka-connect-s3/target/components/packages/confluentinc-kafka-connect-s3-10.1.0-SNAPSHOT.zip zips/ && mv zips/confluentinc-kafka-connect-s3-10.1.0-SNAPSHOT.zip zips/confluentinc-kafka-connect-s3-UdxStreamPartitioner.zip
       - uses: jakejarvis/s3-sync-action@master
         env:
           AWS_S3_BUCKET: ${{ secrets.DEV_AWS_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-          SOURCE_DIR: "kafka-connect-s3/target/components/packages"
+          SOURCE_DIR: "zips"
