@@ -59,7 +59,7 @@ must be downloaded, built from source and then added to the local Maven reposito
 
 Run this script to install the dependencies (it will take a while...)
 ```
-./install_upstream_dependencies.sh
+./bin/install_upstream_dependencies.sh
 ```
 
 The dependencies in this script are exact. They were derived from the various pom.xml files that are included in each project.
@@ -101,11 +101,11 @@ If for any reason the GitHub actions workflow is broken, or it's not desirable t
 
 ```shell
 # for dev
-$ ./build_zip_and_copy_to_s3.sh dev 
+$ ./bin/build_zip_and_copy_to_s3.sh dev 
 # for stage
-$ ./build_zip_and_copy_to_s3.sh stage
+$ ./bin/build_zip_and_copy_to_s3.sh stage
 # for prod
-$ ./build_zip_and_copy_to_s3.sh prod
+$ ./bin/build_zip_and_copy_to_s3.sh prod
 ```
 
 ### Once the updates have been pushed to S3

@@ -17,11 +17,11 @@ jobs:
           java-version: "11"
           distribution: "zulu"
       - name: Install upstream dependencies
-        run: ./install_upstream_dependencies.sh
+        run: ./bin/install_upstream_dependencies.sh
       - name: Package up ZIP
         run: mvn --batch-mode install -DskipTests
       - name: Rename and move packaged ZIP
-        run: mkdir zips && cp kafka-connect-s3/target/components/packages/confluentinc-kafka-connect-s3-10.1.0-SNAPSHOT.zip zips/ && mv zips/confluentinc-kafka-connect-s3-10.1.0-SNAPSHOT.zip zips/confluentinc-kafka-connect-s3-UdxStreamPartitioner.zip
+        run: ./bin/copy_ci_build_to_folder.sh zips
       - uses: jakejarvis/s3-sync-action@master
         env:
           AWS_S3_BUCKET: ${{ secrets.DEV_AWS_S3_BUCKET }}

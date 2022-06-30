@@ -1,6 +1,7 @@
 # Build products
 target/
 build/
+zips/
 
 # IntelliJ data
 *.iml
