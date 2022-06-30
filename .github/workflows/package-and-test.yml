@@ -15,16 +15,7 @@ jobs:
           distribution: "zulu"
       - name: Install upstream dependencies
         run: ./bin/install_upstream_dependencies.sh
-      - name: Package up ZIP
+      - name: Maven build / Package up ZIP
         run: mvn --batch-mode install -DskipTests
       - name: Run UdxStreamPartitioner unit tests
         run: mvn --batch-mode -Dtest=UdxStreamPartitionerTest -Dsurefire.failIfNoSpecifiedTests=false test
-      - name: __TODO_REMOVE_ME__ Rename and move packaged ZIP
-        run: ./bin/copy_ci_build_to_folder.sh zips
-      - uses: jakejarvis/s3-sync-action@master
-        env:
-          AWS_S3_BUCKET: ${{ secrets.DEV_AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          SOURCE_DIR: "zips"
