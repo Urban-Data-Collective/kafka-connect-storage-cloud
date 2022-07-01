@@ -69,6 +69,7 @@ import io.confluent.connect.storage.partitioner.FieldPartitioner;
 import io.confluent.connect.storage.partitioner.HourlyPartitioner;
 import io.confluent.connect.storage.partitioner.PartitionerConfig;
 import io.confluent.connect.storage.partitioner.TimeBasedPartitioner;
+import io.confluent.connect.s3.extensions.UdxStreamPartitioner;
 
 import static org.apache.kafka.common.config.ConfigDef.Range.atLeast;
 
@@ -216,11 +217,12 @@ public class S3SinkConnectorConfig extends StorageSinkConnectorConfig {
 
     PARTITIONER_CLASS_RECOMMENDER.addValidValues(
         Arrays.asList(
-            DefaultPartitioner.class,
-            HourlyPartitioner.class,
-            DailyPartitioner.class,
-            TimeBasedPartitioner.class,
-            FieldPartitioner.class
+                UdxStreamPartitioner.class,
+                DefaultPartitioner.class,
+                HourlyPartitioner.class,
+                DailyPartitioner.class,
+                TimeBasedPartitioner.class,
+                FieldPartitioner.class
         )
     );
   }

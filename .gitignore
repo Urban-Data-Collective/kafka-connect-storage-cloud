@@ -1,6 +1,7 @@
 # Build products
 target/
 build/
+zips/
 
 # IntelliJ data
 *.iml
@@ -16,3 +17,12 @@ build/
 /docs/_build
 
 .DS_Store
+
+# Upstream dependencies that need to be built from source
+# These are needed for local dev and running checks on CI
+kafka/
+rest-utils/
+schema-registry/
+common/
+kafka-connect-storage-common/
+
