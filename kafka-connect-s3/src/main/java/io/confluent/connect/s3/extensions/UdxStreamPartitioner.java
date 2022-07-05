@@ -36,11 +36,11 @@ import java.util.UUID;
 public class UdxStreamPartitioner<T> extends DefaultPartitioner<T> {
   private static final Logger log = LoggerFactory.getLogger(UdxStreamPartitioner.class);
   private static final String PARTITION_FORMAT =
-          "streamUuid=%s/entityId=%s/%d-%02d/day=%02d/hour=%02d";
+          "stream_uuid=%s/entity_id=%s/year_month=%d-%02d/day=%02d/hour=%02d";
   private static final String INVALID_PAYLOAD_PARTITION_FORMAT =
-          "invalidIdOrTimestamp/streamUuid=%s";
+          "invalid_payloads/stream_uuid=%s";
   private static final String INVALID_TIMESTAMP_PARTITION_FORMAT =
-          "invalidIdOrTimestamp/streamUuid=%s/entityId=%s/%s";
+          "invalid_payloads/stream_uuid=%s/entity_id=%s/%s";
 
   @Override
   public void configure(Map<String, Object> config) {
