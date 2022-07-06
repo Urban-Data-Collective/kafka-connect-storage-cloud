@@ -25,10 +25,12 @@ public class NestedTimestampPayload implements UdxPayload {
   private String id;
 
   @SuppressWarnings("unchecked")
-  @JsonProperty("timestamp")
-  private void unpackNested(Map<String, Object> timestamp) {
+  @JsonProperty("payload")
+  private void unpackNested(Map<String, Object> payload) {
     // For timestamps of form: timestamp: { type: 'Property', value: '2021-05-07T06:06:30Z' },
-    this.timestamp = (String) timestamp.get("value");
+    this.id = (String) payload.get("id");
+    Map<String,String> timestamp = (Map<String,String>)payload.get("timestamp");
+    this.timestamp = timestamp.get("value");
   }
 
   public String getTimestamp() {
@@ -48,6 +50,6 @@ public class NestedTimestampPayload implements UdxPayload {
   }
 
   public String toString() {
-    return "OcpiPayload [ entityId: " + getId() + ", timestamp: " + getTimestamp() + " ]";
+    return "Payload [ entityId: " + getId() + ", timestamp: " + getTimestamp() + " ]";
   }
 }
