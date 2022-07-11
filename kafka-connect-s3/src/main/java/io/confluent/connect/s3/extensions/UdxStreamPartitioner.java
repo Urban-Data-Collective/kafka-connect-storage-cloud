@@ -183,7 +183,7 @@ public class UdxStreamPartitioner<T> extends DefaultPartitioner<T> {
 
     UdxPayload udxPayload = parseJsonStringToKnownClass(jsonStringValue);
 
-    if (udxPayload.getId() == null || udxPayload.getTimestamp() == null) {
+    if (udxPayload == null || udxPayload.getId() == null || udxPayload.getTimestamp() == null) {
       log.warn("No UdxPayload mapping found, sending payload to non stream uuid partition...");
       String msg = "Could not map this payload to a defined UdxPayload class";
       // At this point, it might be a good idea to see if we can still parse the timestamp.

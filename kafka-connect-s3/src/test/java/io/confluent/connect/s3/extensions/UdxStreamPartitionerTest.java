@@ -222,6 +222,34 @@ public class UdxStreamPartitionerTest extends StorageSinkTestBase {
     }
 
     @Test
+    public void testCannotParseNonJsonPayload() {
+        // Top level config
+        Map<String, Object> config = new HashMap<>();
+        config.put(StorageCommonConfig.DIRECTORY_DELIM_CONFIG, StorageCommonConfig.DIRECTORY_DELIM_DEFAULT);
+
+        // Configure the partitioner
+        UdxStreamPartitioner<String> partitioner = new UdxStreamPartitioner<>();
+        partitioner.configure(config);
+
+        String streamUuid = "1e962902-65ae-4346-bb8d-d2206d6dc852";
+
+        String timeZoneString = (String) config.get(PartitionerConfig.TIMEZONE_CONFIG);
+        int YYYY = 2022;
+        int MM = 6;
+        int DD = 9;
+        int HH = 7;
+        long timestamp = new DateTime(YYYY, MM, DD, HH, 0, 0, 0, DateTimeZone.forID(timeZoneString)).getMillis();
+        String ocpiLocationPayload = "{not={valid=atAll}}";
+        SinkRecord ocpiSessionRecord = generateUdxPayloadRecordNullKey(
+                streamUuid,
+                ocpiLocationPayload,
+                timestamp
+        );
+        String encodedPartition = partitioner.encodePartition(ocpiSessionRecord);
+        assertThat(encodedPartition, is(String.format("invalid_payloads/stream_uuid=%s", streamUuid)));
+    }
+
+    @Test
     public void testNoValidUuidInHeaders() {
         // Top level config
         Map<String, Object> config = new HashMap<>();
