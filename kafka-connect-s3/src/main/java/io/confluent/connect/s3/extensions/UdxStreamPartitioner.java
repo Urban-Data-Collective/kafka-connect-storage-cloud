@@ -41,7 +41,7 @@ public class UdxStreamPartitioner<T> extends DefaultPartitioner<T> {
           "stream_uuid=%s/entity_id=%s/year_month=%d-%02d/day=%02d/hour=%02d";
 
   private static final String CORRUPT_AVRO_PAYLOAD_PARTITION_FORMAT =
-    "invalid_payloads/corrupt_payloads";
+          "invalid_payloads/corrupt_payloads";
   private static final String INVALID_PAYLOAD_PARTITION_FORMAT =
           "invalid_payloads/stream_uuid=%s";
   private static final String INVALID_TIMESTAMP_PARTITION_FORMAT =

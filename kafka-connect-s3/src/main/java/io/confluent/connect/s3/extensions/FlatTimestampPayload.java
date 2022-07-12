@@ -16,10 +16,6 @@
 
 package io.confluent.connect.s3.extensions;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.Map;
-
 public class FlatTimestampPayload implements UdxPayload {
   private String timestamp;
   private String id;
