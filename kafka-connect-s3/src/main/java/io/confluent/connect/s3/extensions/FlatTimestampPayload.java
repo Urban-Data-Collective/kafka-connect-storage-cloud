@@ -24,12 +24,6 @@ public class FlatTimestampPayload implements UdxPayload {
   private String timestamp;
   private String id;
 
-  @JsonProperty("payload")
-  private void unpackNested(Map<String, Object> payload) {
-    // For timestamps of form: timestamp: '2021-05-07T06:06:30Z',
-    this.timestamp = (String) payload.get("timestamp");
-    this.id = (String) payload.get("id");
-  }
 
   public String getTimestamp() {
     return timestamp;
