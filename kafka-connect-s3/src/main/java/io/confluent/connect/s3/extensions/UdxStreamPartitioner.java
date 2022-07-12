@@ -17,9 +17,11 @@
 package io.confluent.connect.s3.extensions;
 
 import com.fasterxml.jackson.core.JacksonException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import io.confluent.connect.storage.errors.PartitionException;
 import io.confluent.connect.storage.partitioner.DefaultPartitioner;
+
 import org.apache.kafka.connect.header.Header;
 import org.apache.kafka.connect.sink.SinkRecord;
 
@@ -37,6 +39,9 @@ public class UdxStreamPartitioner<T> extends DefaultPartitioner<T> {
   private static final Logger log = LoggerFactory.getLogger(UdxStreamPartitioner.class);
   private static final String PARTITION_FORMAT =
           "stream_uuid=%s/entity_id=%s/year_month=%d-%02d/day=%02d/hour=%02d";
+
+  private static final String CORRUPT_AVRO_PAYLOAD_PARTITION_FORMAT =
+          "invalid_payloads/corrupt_payloads";
   private static final String INVALID_PAYLOAD_PARTITION_FORMAT =
           "invalid_payloads/stream_uuid=%s";
   private static final String INVALID_TIMESTAMP_PARTITION_FORMAT =
@@ -98,6 +103,10 @@ public class UdxStreamPartitioner<T> extends DefaultPartitioner<T> {
     int day = timestamp.getDayOfMonth();
     int hour = timestamp.getHourOfDay();
     return String.format(PARTITION_FORMAT, streamUuid, entityId, year, month, day, hour);
+  }
+
+  private String generateCorruptAvroPayloadPartition() {
+    return CORRUPT_AVRO_PAYLOAD_PARTITION_FORMAT;
   }
 
   private String generateInvalidPayloadPartition(String streamUuid) {
@@ -166,7 +175,16 @@ public class UdxStreamPartitioner<T> extends DefaultPartitioner<T> {
     log.info("encoding partition with UdxStreamPartitioner...");
     log.info("Parsing value...");
 
-    String jsonStringValue = sinkRecord.value().toString();
+    String payload = sinkRecord.value().toString();
+    ObjectMapper mapper = new ObjectMapper();
+    AvroPayload avroPayload;
+    try {
+      avroPayload = mapper.readValue(payload,AvroPayload.class);
+    } catch (JsonProcessingException e) {
+      return generateCorruptAvroPayloadPartition();
+    }
+
+    String jsonStringValue = avroPayload.getPayload();
     log.info("Value: " + jsonStringValue);
     String streamUuid = null;
 
