@@ -21,14 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import io.confluent.connect.storage.errors.PartitionException;
 import io.confluent.connect.storage.partitioner.DefaultPartitioner;
-import io.confluent.kafka.schemaregistry.ParsedSchema;
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClientConfig;
-import io.confluent.kafka.schemaregistry.client.rest.entities.SchemaReference;
-import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
-import javassist.bytecode.ByteArray;
-import org.apache.avro.Schema;
-import org.apache.avro.generic.GenericRecord;
+
 import org.apache.kafka.connect.header.Header;
 import org.apache.kafka.connect.sink.SinkRecord;
 
@@ -39,16 +32,8 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
-
-//import static io.confluent.kafka.schemaregistry.avro.AvroSchemaUtils.toJson;
-import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 
 public class UdxStreamPartitioner<T> extends DefaultPartitioner<T> {
   private static final Logger log = LoggerFactory.getLogger(UdxStreamPartitioner.class);
