@@ -55,6 +55,7 @@ public class UdxStreamPartitionerTest extends StorageSinkTestBase {
 
     private SinkRecord generateUdxPayloadRecordNoHeader(String payload, Long timestamp) {
         Schema schema = this.createSchemaWithTimestampField();
+
         return new SinkRecord(
                 "test-ocpi-session-topic",
                 13,
@@ -74,8 +75,6 @@ public class UdxStreamPartitionerTest extends StorageSinkTestBase {
         Map<String, Object> config = new HashMap<>();
         config.put(StorageCommonConfig.DIRECTORY_DELIM_CONFIG, StorageCommonConfig.DIRECTORY_DELIM_DEFAULT);
 
-
-
         // Configure the partitioner
         UdxStreamPartitioner<String> partitioner = new UdxStreamPartitioner<>();
         partitioner.configure(config);
@@ -90,12 +89,14 @@ public class UdxStreamPartitionerTest extends StorageSinkTestBase {
         String entityId = "entity-1234";
         // timestamp format: "2021-08-31T17:24:13Z";
         // Create an OCPI location payload
+
         String payloadTimestamp = String.format("%d-%02d-%02dT%02d:12:34Z", YYYY, MM, DD, HH);
         String ocpiSessionPayload = String.format(
                 "{\"payload\":\"{\\\"id\\\":\\\"%s\\\",\\\"timestamp\\\":\\\"%s\\\"}\"}",
                 entityId,
                 payloadTimestamp
-                );
+        );
+
         SinkRecord ocpiSessionRecord = generateUdxPayloadRecordNullKey(
                 streamUuid,
                 ocpiSessionPayload,
@@ -346,11 +347,12 @@ public class UdxStreamPartitionerTest extends StorageSinkTestBase {
         Map<String, Object> config = new HashMap<>();
         config.put(StorageCommonConfig.DIRECTORY_DELIM_CONFIG, StorageCommonConfig.DIRECTORY_DELIM_DEFAULT);
 
-
-
         // Configure the partitioner
         UdxStreamPartitioner<String> partitioner = new UdxStreamPartitioner<>();
         partitioner.configure(config);
+
+        String streamUuid = "1e962902-65ae-4346-bb8d-d2206d6dc852";
+        String entityId = "entity-1234";
 
         String timeZoneString = (String) config.get(PartitionerConfig.TIMEZONE_CONFIG);
         int YYYY = 2022;
@@ -358,20 +360,17 @@ public class UdxStreamPartitionerTest extends StorageSinkTestBase {
         int DD = 9;
         int HH = 7;
         long timestamp = new DateTime(YYYY, MM, DD, HH, 0, 0, 0, DateTimeZone.forID(timeZoneString)).getMillis();
-        String streamUuid = "1e962902-65ae-4346-bb8d-d2206d6dc852";
-        String entityId = "entity-1234";
-        // timestamp format: "2021-08-31T17:24:13Z";
-        // Create an OCPI location payload
         String payloadTimestamp = String.format("%d-%02d-%02dT%02d:12:34Z", YYYY, MM, DD, HH);
         String ocpiSessionPayload = String.format(
-          "{\"id\":\"%s\",\"timestamp\":\"%s\"}",
-          entityId,
-          payloadTimestamp
+                "{\"id\":\"%s\",\"timestamp\":\"%s\"}",
+                entityId,
+                payloadTimestamp
         );
+
         SinkRecord ocpiSessionRecord = generateUdxPayloadRecordNullKey(
-          streamUuid,
-          ocpiSessionPayload,
-          timestamp
+                streamUuid,
+                ocpiSessionPayload,
+                timestamp
         );
 
         // Run the partitioner
