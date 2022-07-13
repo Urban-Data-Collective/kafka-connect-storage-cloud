@@ -17,6 +17,7 @@
 package io.confluent.connect.s3.extensions;
 
 import com.fasterxml.jackson.core.JacksonException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import io.confluent.connect.storage.errors.PartitionException;
 import io.confluent.connect.storage.partitioner.DefaultPartitioner;
@@ -37,6 +38,8 @@ public class UdxStreamPartitioner<T> extends DefaultPartitioner<T> {
   private static final Logger log = LoggerFactory.getLogger(UdxStreamPartitioner.class);
   private static final String PARTITION_FORMAT =
           "stream_uuid=%s/entity_id=%s/year_month=%d-%02d/day=%02d/hour=%02d";
+  private static final String CORRUPT_JSON_PAYLOAD_PARTITION_FORMAT =
+          "invalid_payloads/corrupt_payloads";
   private static final String INVALID_PAYLOAD_PARTITION_FORMAT =
           "invalid_payloads/stream_uuid=%s";
   private static final String INVALID_TIMESTAMP_PARTITION_FORMAT =
@@ -98,6 +101,10 @@ public class UdxStreamPartitioner<T> extends DefaultPartitioner<T> {
     int day = timestamp.getDayOfMonth();
     int hour = timestamp.getHourOfDay();
     return String.format(PARTITION_FORMAT, streamUuid, entityId, year, month, day, hour);
+  }
+
+  private String generateCorruptJsonPayloadPartition() {
+    return CORRUPT_JSON_PAYLOAD_PARTITION_FORMAT;
   }
 
   private String generateInvalidPayloadPartition(String streamUuid) {
@@ -166,7 +173,16 @@ public class UdxStreamPartitioner<T> extends DefaultPartitioner<T> {
     log.info("encoding partition with UdxStreamPartitioner...");
     log.info("Parsing value...");
 
-    String jsonStringValue = sinkRecord.value().toString();
+    String stringPayload = sinkRecord.value().toString();
+    ObjectMapper mapper = new ObjectMapper();
+    JsonPayload jsonPayload;
+    try {
+      jsonPayload = mapper.readValue(stringPayload, JsonPayload.class);
+    } catch (JsonProcessingException e) {
+      return generateCorruptJsonPayloadPartition();
+    }
+
+    String jsonStringValue = jsonPayload.getPayload();
     log.info("Value: " + jsonStringValue);
     String streamUuid = null;
 

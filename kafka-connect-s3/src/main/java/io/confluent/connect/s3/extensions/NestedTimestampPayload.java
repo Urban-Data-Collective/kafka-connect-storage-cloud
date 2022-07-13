@@ -25,12 +25,10 @@ public class NestedTimestampPayload implements UdxPayload {
   private String id;
 
   @SuppressWarnings("unchecked")
-  @JsonProperty("payload")
-  private void unpackNested(Map<String, Object> payload) {
+  @JsonProperty("timestamp")
+  private void unpackNested(Map<String, Object> timestamp) {
     // For timestamps of form: timestamp: { type: 'Property', value: '2021-05-07T06:06:30Z' },
-    this.id = (String) payload.get("id");
-    Map<String,String> timestamp = (Map<String,String>)payload.get("timestamp");
-    this.timestamp = timestamp.get("value");
+    this.timestamp = (String) timestamp.get("value");
   }
 
   public String getTimestamp() {
