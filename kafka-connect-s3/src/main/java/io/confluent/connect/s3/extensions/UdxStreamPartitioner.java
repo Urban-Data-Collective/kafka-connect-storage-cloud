@@ -39,8 +39,7 @@ public class UdxStreamPartitioner<T> extends DefaultPartitioner<T> {
   private static final Logger log = LoggerFactory.getLogger(UdxStreamPartitioner.class);
   private static final String PARTITION_FORMAT =
           "stream_uuid=%s/entity_id=%s/year_month=%d-%02d/day=%02d/hour=%02d";
-
-  private static final String CORRUPT_AVRO_PAYLOAD_PARTITION_FORMAT =
+  private static final String CORRUPT_JSON_PAYLOAD_PARTITION_FORMAT =
           "invalid_payloads/corrupt_payloads";
   private static final String INVALID_PAYLOAD_PARTITION_FORMAT =
           "invalid_payloads/stream_uuid=%s";
@@ -105,8 +104,8 @@ public class UdxStreamPartitioner<T> extends DefaultPartitioner<T> {
     return String.format(PARTITION_FORMAT, streamUuid, entityId, year, month, day, hour);
   }
 
-  private String generateCorruptAvroPayloadPartition() {
-    return CORRUPT_AVRO_PAYLOAD_PARTITION_FORMAT;
+  private String generateCorruptJsonPayloadPartition() {
+    return CORRUPT_JSON_PAYLOAD_PARTITION_FORMAT;
   }
 
   private String generateInvalidPayloadPartition(String streamUuid) {
@@ -175,16 +174,16 @@ public class UdxStreamPartitioner<T> extends DefaultPartitioner<T> {
     log.info("encoding partition with UdxStreamPartitioner...");
     log.info("Parsing value...");
 
-    String payload = sinkRecord.value().toString();
+    String stringPayload = sinkRecord.value().toString();
     ObjectMapper mapper = new ObjectMapper();
-    AvroPayload avroPayload;
+    JsonPayload jsonPayload;
     try {
-      avroPayload = mapper.readValue(payload,AvroPayload.class);
+      jsonPayload = mapper.readValue(stringPayload, JsonPayload.class);
     } catch (JsonProcessingException e) {
-      return generateCorruptAvroPayloadPartition();
+      return generateCorruptJsonPayloadPartition();
     }
 
-    String jsonStringValue = avroPayload.getPayload();
+    String jsonStringValue = jsonPayload.getPayload();
     log.info("Value: " + jsonStringValue);
     String streamUuid = null;
 
