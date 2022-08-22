@@ -162,8 +162,7 @@ public class UdxStreamPartitionerTest extends StorageSinkTestBase {
         partitioner.configure(config);
 
         String streamUuid = "1e962902-65ae-4346-bb8d-d2206d6dc852";
-        String entityId = "entity-1234:5678;/$&9";
-        String expectedEntityId = "entity-1234_5678____9";
+        String entityId = "entity-1234";
 
         String timeZoneString = (String) config.get(PartitionerConfig.TIMEZONE_CONFIG);
         int YYYY = 2022;
@@ -191,7 +190,7 @@ public class UdxStreamPartitionerTest extends StorageSinkTestBase {
         String encodedPartition = partitioner.encodePartition(ocpiSessionRecord);
 
         // Assert that the filepath is correct
-        String expectedPath = String.format(UDX_PARTITION_FORMAT_FOR_INTS, streamUuid, expectedEntityId, YYYY, MM, DD, HH);
+        String expectedPath = String.format(UDX_PARTITION_FORMAT_FOR_INTS, streamUuid, entityId, YYYY, MM, DD, HH);
         assertThat(encodedPartition, is(expectedPath));
     }
 
@@ -212,13 +211,13 @@ public class UdxStreamPartitionerTest extends StorageSinkTestBase {
         int HH = 7;
         long timestamp = new DateTime(YYYY, MM, DD, HH, 0, 0, 0, DateTimeZone.forID(timeZoneString)).getMillis();
         String streamUuid = "1e962902-65ae-4346-bb8d-d2206d6dc852";
-        String entityId = "entity-1234";
-        // timestamp format: "2021-08-31T17:24:13Z";
-        // Create an OCPI location payload
+
+        String entityId = "entity-1234:5678;/$&9";
+        String expectedEntityId = "entity-1234_5678____9";
 
         String payloadTimestamp = String.format("%d-%02d-%02dT%02d:12:34Z", YYYY, MM, DD, HH);
         String ocpiSessionPayload = String.format(
-          "{\"id\":\"%s\",\"countryCode\":\"GB\",\"partyId\":\"CKL\",\"type\":\"EVChargingSession\",\"evseId\":\"GB*CKL*7*1\",\"address\":{\"postalCode\":\"CV1 3AQ\",\"streetAddress\":\"Northumberland Road\",\"addressCountry\":\"GB\",\"addressLocality\":\"Coventry\"},\"totalKW\":1.019,\"location\":{\"type\":\"Point\",\"coordinates\":[-1.524266,52.411123]},\"provider\":\"CKL\",\"sessionId\":59,\"timestamp\":\"%s\",\"connectorId\":7,\"sessionDurationMins\":0.3,\"chargingDurationMins\":0.3,\"sessionStartTime\":\"2020-04-28T11:54:54Z\",\"sessionEndTime\":\"2020-04-28T11:55:09Z\",\"totalCost\":{\"exclVat\":1,\"inclVat\":1.2}}",
+          "{\"payload\":\"{\\\"id\\\":\\\"%s\\\",\\\"timestamp\\\":\\\"%s\\\"}\"}",
           entityId,
           payloadTimestamp
         );
@@ -233,7 +232,7 @@ public class UdxStreamPartitionerTest extends StorageSinkTestBase {
         String encodedPartition = partitioner.encodePartition(ocpiSessionRecord);
 
         // Assert that the filepath is correct
-        String expectedPath = String.format(UDX_PARTITION_FORMAT_FOR_INTS, streamUuid, entityId, YYYY, MM, DD, HH);
+        String expectedPath = String.format(UDX_PARTITION_FORMAT_FOR_INTS, streamUuid, expectedEntityId, YYYY, MM, DD, HH);
         assertThat(encodedPartition, is(expectedPath));
     }
 
