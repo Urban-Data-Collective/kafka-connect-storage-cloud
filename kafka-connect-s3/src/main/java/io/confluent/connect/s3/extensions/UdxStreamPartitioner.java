@@ -210,8 +210,13 @@ public class UdxStreamPartitioner<T> extends DefaultPartitioner<T> {
 
     log.info("Mapping record value into object...");
     log.info(udxPayload.toString());
-    String entityId = udxPayload.getId();
+    String entityIdRaw = udxPayload.getId();
     String timestamp = udxPayload.getTimestamp();
+
+    // Replace all disallowed characters from entityId as these
+    // special characters can't be part of partition path.
+    String entityId = entityIdRaw.replaceAll("[^A-Za-z0-9!\\-_\\.*'()]", "_");
+    log.info("Original entityId = " + entityIdRaw + ", Transformed entityId = " + entityId);
 
     try {
       DateTime parsedTimestamp = parseTimestampFromPayload(timestamp);
