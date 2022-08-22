@@ -16,29 +16,15 @@
 
 package io.confluent.connect.s3.extensions;
 
-public class FlatTimestampPayload implements UdxPayload {
-  private String timestamp;
-  private String id;
+public class JsonPayload {
 
+  private String payload;
 
-  // For timestamps of form: timestamp: '2021-05-07T06:06:30Z',
-  public String getTimestamp() {
-    return timestamp;
+  public String getPayload() {
+    return payload;
   }
 
-  public void setTimestamp(String timestamp) {
-    this.timestamp = timestamp;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public String toString() {
-    return "Payload [ entityId: " + getId() + ", timestamp: " + getTimestamp() + " ]";
+  public void setPayload(String payload) {
+    this.payload = payload;
   }
 }

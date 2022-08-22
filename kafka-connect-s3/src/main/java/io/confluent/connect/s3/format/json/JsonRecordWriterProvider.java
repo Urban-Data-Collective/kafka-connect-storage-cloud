@@ -20,7 +20,9 @@ import static io.confluent.connect.s3.util.Utils.getAdjustedFilename;
 import static io.confluent.connect.s3.util.Utils.sinkRecordToLoggableString;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.confluent.connect.s3.extensions.JsonPayload;
 import io.confluent.connect.s3.storage.IORecordWriter;
 import io.confluent.connect.s3.format.RecordViews.HeaderRecordView;
 import io.confluent.connect.s3.format.S3RetriableRecordWriter;
@@ -90,10 +92,23 @@ public class JsonRecordWriterProvider extends RecordViewSetter
                     recordView.getViewSchema(record, envelop),
                     value
                 );
+                log.info("writing raw json to S3:");
+                log.info(String.valueOf(rawJson));
                 s3outWrapper.write(rawJson);
                 s3outWrapper.write(LINE_SEPARATOR_BYTES);
               } else {
-                writer.writeObject(value);
+                log.info("writing actual value to S3:");
+                log.info(value.toString());
+
+                try {
+                  JsonPayload jsonPayload = mapper.readValue(value.toString(), JsonPayload.class);
+                  log.info("Writing JsonPayload to sink");
+                  writer.writeObject(jsonPayload);
+
+                } catch (JsonProcessingException e) {
+                  log.warn("Could not map value to JsonPayload, writing raw value instead");
+                  writer.writeObject(value);
+                }
                 writer.writeRaw(LINE_SEPARATOR);
               }
             }
